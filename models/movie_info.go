@@ -36,9 +36,10 @@ func AddMovie(movie *MovieInfo) {
 
 func GetMovieInfo(MovieHtml string) MovieInfo {
 	movie := MovieInfo{
-		MovieName:      getMovieName(MovieHtml),
+		MovieName:      GetMovieName(MovieHtml),
 		MovieCharacter: getMovieCharacter(MovieHtml),
 		MovieRate:      getMovieRate(MovieHtml),
+		//MovieID:      getMovieID(MovieHtml),
 		CreationTime:   time.Now().Format("2006-01-02 15:04:05"),
 	}
 
@@ -46,6 +47,11 @@ func GetMovieInfo(MovieHtml string) MovieInfo {
 
 	return movie
 }
+
+//func getMovieID(movieHtml string) string {
+//	regstr := `<a.*?href="https://movie.douban.com/subject/(.*?)/photos?type=R" title="点击看更多海报">.*?</a>`
+//	return getMovieInfoByRegex(movieHtml, regstr)
+//}
 
 func getMovieInfoByRegex(movieHtml string, regstr string) string {
 	reg := regexp.MustCompile(regstr)
@@ -58,7 +64,7 @@ func getMovieInfoByRegex(movieHtml string, regstr string) string {
 	return strings.Trim(character, " | ")
 }
 
-func getMovieName(MovieHtml string) string {
+func GetMovieName(MovieHtml string) string {
 	// <span property="v:itemreviewed">哪吒之魔童降世</span>
 
 	regstr := `<span\s*property="v:itemreviewed">(.*?)</span>`
@@ -79,10 +85,14 @@ func getMovieRate(MovieHtml string) string {
 	return getMovieInfoByRegex(MovieHtml, regstr)
 }
 
-func GetMovieUrlOther(html string) interface{} {
-	span := `<a/s*class="item".*?href="(.*?)">.*?<img/s*src="(.*?)".*?</a>`
+func GetMoviesUrls(html string) []string {
+	reg := regexp.MustCompile(`<a.*?href="(https://movie.douban.com/.*?)"`)
+	result := reg.FindAllStringSubmatch(html, -1)
 
-	reg := regexp.MustCompile(span)
-	res := reg.FindAllStringSubmatch(html, -1)
-	return res
+	var movieSets []string
+	for _, v := range result {
+		movieSets = append(movieSets, v[1])
+	}
+
+	return movieSets
 }

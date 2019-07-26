@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/go-spider/models"
+	"github.com/xuchengyi2015/go-spider/models"
 	"encoding/json"
 
 	"github.com/astaxie/beego"

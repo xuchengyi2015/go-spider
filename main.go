@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/go-spider/routers"
+	_ "github.com/xuchengyi2015/go-spider/routers"
 
 	"github.com/astaxie/beego"
 )

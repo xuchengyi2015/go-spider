@@ -8,7 +8,7 @@
 package routers
 
 import (
-	"github.com/go-spider/controllers"
+	"github.com/xuchengyi2015/go-spider/controllers"
 
 	"github.com/astaxie/beego"
 )
@@ -25,6 +25,10 @@ func init() {
 				&controllers.UserController{},
 			),
 		),
+		beego.NSNamespace("/movie_info",
+			beego.NSInclude(
+				&controllers.MovieInfoController{},
+			)),
 	)
 	beego.AddNamespace(ns)
 }

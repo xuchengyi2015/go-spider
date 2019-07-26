@@ -15,3 +15,4 @@ func GetMovieInfo(m *MovieInfoController)
 ```$xslt
 reg := regexp.MustCompile(`<span\s*property="v:itemreviewed">(.*?)</span>`)
 ```
+> 参考代码：// https://www.cnblogs.com/wt645631686/p/9702572.html

@@ -25,6 +25,7 @@ func (m *MovieInfoController) GetMovieInfo() {
 	m.ServeJSON()
 }
 
+
 // @router /start_crawl [get]
 func (m *MovieInfoController) CrawlMovie() {
 	rootUrl := `https://movie.douban.com/subject/6786002/`

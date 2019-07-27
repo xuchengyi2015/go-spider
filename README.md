@@ -16,3 +16,77 @@ func GetMovieInfo(m *MovieInfoController)
 reg := regexp.MustCompile(`<span\s*property="v:itemreviewed">(.*?)</span>`)
 ```
 > 参考代码：// https://www.cnblogs.com/wt645631686/p/9702572.html
+
+#### 4、曲线救国实现go语言的函数参数默认值
+代码写到既简单又清晰，还是比较好懂了。
+
+```$xslt
+package tools
+
+type XResult struct {
+	Code    int
+	Data    interface{}
+	Message string
+}
+
+var defaultXResult = XResult{
+	Code:    0,
+	Data:    nil,
+	Message: "success",
+}
+
+type XResultOption func(*XResult)
+
+func WithCode(code int) XResultOption {
+	return func(result *XResult) {
+		result.Code = code
+	}
+}
+
+func WithData(data interface{}) XResultOption {
+	return func(result *XResult) {
+		result.Data = data
+	}
+}
+
+func WithMessage(message string) XResultOption {
+	return func(result *XResult) {
+		result.Message = message
+	}
+}
+
+// 函数默认参数的Go实现（真麻烦！(╯﹏╰)）
+func GetResult(opts ...XResultOption) XResult {
+	result := defaultXResult
+
+	for _, o := range opts {
+		o(&result)
+	}
+	return result
+}
+
+```
+
+#### 5、对于beego api的统一错误处理
+
+在controller的函数中实现一个匿名函数，类似于：
+```$xslt
+// @router /start_crawl [get]
+func (m *MovieInfoController) CrawlMovie() {
+	defer func() {
+		if err := recover(); err != nil {
+			m.Data["json"] = tools.GetResult(
+				tools.WithCode(1),
+				tools.WithMessage(fmt.Sprint(err)),
+			)
+			m.ServeJSON()
+			return
+		}
+	}()
+	
+	...其他代码
+	
+	m.Data["json"] = tools.GetResult()
+        m.ServeJSON()
+}
+```

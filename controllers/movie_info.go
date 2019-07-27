@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
 	"github.com/xuchengyi2015/go-spider/models"
@@ -27,6 +28,17 @@ func (m *MovieInfoController) GetMovieInfo() {
 
 // @router /start_crawl [get]
 func (m *MovieInfoController) CrawlMovie() {
+	defer func() {
+		if err := recover(); err != nil {
+			m.Data["json"] = tools.GetResult(
+				tools.WithCode(1),
+				tools.WithMessage(fmt.Sprint(err)),
+			)
+			m.ServeJSON()
+			return
+		}
+	}()
+
 	rootUrl := `https://movie.douban.com/subject/6786002/`
 	models.PushQueue(rootUrl) //将根站点加入队列
 
@@ -47,15 +59,7 @@ func (m *MovieInfoController) CrawlMovie() {
 
 		if models.GetMovieName(html) != "" {
 			_, err := models.GetMovieInfo(html)
-			if err != nil {
-				m.Data["json"] = tools.GetResult(
-					tools.WithCode(1),
-					tools.WithMessage("添加数据失败"),
-					tools.WithData(err.Error()),
-				)
-				m.ServeJSON()
-				return
-			}
+			tools.CheckErr(err)
 			models.SetQueue(url)
 		}
 

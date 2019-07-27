@@ -9,7 +9,7 @@ type XResult struct {
 var defaultXResult = XResult{
 	Code:    0,
 	Data:    nil,
-	Message: "操作成功！",
+	Message: "success",
 }
 
 type XResultOption func(*XResult)

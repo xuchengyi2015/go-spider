@@ -25,7 +25,6 @@ func (m *MovieInfoController) GetMovieInfo() {
 	m.ServeJSON()
 }
 
-
 // @router /start_crawl [get]
 func (m *MovieInfoController) CrawlMovie() {
 	rootUrl := `https://movie.douban.com/subject/6786002/`
@@ -39,12 +38,24 @@ func (m *MovieInfoController) CrawlMovie() {
 		}
 
 		url := models.PopQueue()
+		if models.IsVisitedUrl(url) {
+			continue
+		}
 		response := httplib.Get(url)
 		html, err := response.String()
 		tools.CheckErr(err)
 
 		if models.GetMovieName(html) != "" {
-			models.GetMovieInfo(html)
+			_, err := models.GetMovieInfo(html)
+			if err != nil {
+				m.Data["json"] = tools.GetResult(
+					tools.WithCode(1),
+					tools.WithMessage("添加数据失败"),
+					tools.WithData(err.Error()),
+				)
+				m.ServeJSON()
+				return
+			}
 			models.SetQueue(url)
 		}
 
@@ -56,10 +67,6 @@ func (m *MovieInfoController) CrawlMovie() {
 		time.Sleep(time.Second)
 	}
 
-	m.Data["json"] = struct {
-		isDone bool
-	}{
-		isDone: true,
-	}
+	m.Data["json"] = tools.GetResult()
 	m.ServeJSON()
 }

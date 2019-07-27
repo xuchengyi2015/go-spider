@@ -18,7 +18,8 @@ func init() {
 }
 
 func PushQueue(url string) {
-	if !IsVisitedUrl(url) && !strings.Contains(url,"celebrity"){
+	// 如果是演员的页面就直接跳过不要加入
+	if !strings.Contains(url,"celebrity"){
 		client.Lpush(URLQUEUE, []byte(url))
 	}
 }

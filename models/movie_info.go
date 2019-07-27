@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/lib/pq"
-	"github.com/xuchengyi2015/go-spider/tools"
 	"regexp"
 	"strings"
 	"time"
@@ -26,26 +25,30 @@ func init() {
 	orm.RegisterModel(new(MovieInfo))
 }
 
-func AddMovie(movie *MovieInfo) {
+func AddMovie(movie *MovieInfo) error {
 	o := orm.NewOrm()
 	id, err := o.Insert(movie)
-	tools.CheckErr(err)
+	//tools.CheckErr(err)
+	if err != nil {
+		return err
+	}
 
 	fmt.Printf("插入数据ID:%v\n", id)
+	return nil
 }
 
-func GetMovieInfo(MovieHtml string) MovieInfo {
+func GetMovieInfo(MovieHtml string) (MovieInfo, error) {
 	movie := MovieInfo{
 		MovieName:      GetMovieName(MovieHtml),
 		MovieCharacter: getMovieCharacter(MovieHtml),
 		MovieRate:      getMovieRate(MovieHtml),
 		//MovieID:      getMovieID(MovieHtml),
-		CreationTime:   time.Now().Format("2006-01-02 15:04:05"),
+		CreationTime: time.Now().Format("2006-01-02 15:04:05"),
 	}
 
-	AddMovie(&movie)
+	err := AddMovie(&movie)
 
-	return movie
+	return movie, err
 }
 
 //func getMovieID(movieHtml string) string {
